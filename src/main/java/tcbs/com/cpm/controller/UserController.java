@@ -83,10 +83,7 @@ public class UserController {
     List<User> us = uRepo.findAll();
     List<UserNameResp> resp = new ArrayList<>();
     for (User u : us) {
-      UserNameResp ur = new UserNameResp();
-      ur.setId(u.getId());
-      ur.setName(u.getName());
-      resp.add(ur);
+      resp.add(new UserNameResp(u.getId(), u.getName()));
     }
     return ResponseEntity.ok(resp);
   }
@@ -141,10 +138,7 @@ public class UserController {
   }
 
   private UserNameResp toUserResp(User u) {
-    UserNameResp ur = new UserNameResp();
-    ur.setId(u.getId());
-    ur.setName(u.getName());
-    return ur;
+    return new UserNameResp(u.getId(), u.getName());
   }
 
   private DepartmentsResp recursive(DepartmentsResp root, Set<Integer> ids) {

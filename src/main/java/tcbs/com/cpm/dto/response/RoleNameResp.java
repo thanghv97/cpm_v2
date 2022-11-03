@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class UserNameResp implements Serializable {
+public class RoleNameResp implements Serializable {
   private int id;
   private String name;
 }

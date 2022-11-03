@@ -9,6 +9,6 @@ import java.util.Set;
 public class GroupReq implements Serializable {
   private int departmentId;
   private String name;
-  private Set<Long> roleIds;
-  private Set<Long> userIds;
+  private Set<Integer> roleIds;
+  private Set<Integer> userIds;
 }
