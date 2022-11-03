@@ -15,5 +15,6 @@ EXPOSE ${PORT}
 
 # Show arch
 RUN echo "Running on $(uname -m)"
+RUN echo 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
 
 ENTRYPOINT [ "sh", "-c", "java -jar cpm-0.0.1.jar" ]
