@@ -21,6 +21,7 @@ import tcbs.com.cpm.entity.User;
 import tcbs.com.cpm.error.RestApiException;
 import tcbs.com.cpm.repository.GroupRepository;
 import tcbs.com.cpm.repository.UserRepository;
+import tcbs.com.cpm.util.BeanUtils;
 import tcbs.com.cpm.util.Constants;
 
 import java.time.Instant;
@@ -46,15 +47,14 @@ public class UserController {
   @PostMapping
   public ResponseEntity<UserNameResp> create(@RequestBody UserReq uReq) {
     User u = validate(null, uReq);
-    u.setId(uReq.getId());
-    u.setName(uReq.getName());
+    BeanUtils.copyPropertiesIgnoreNull(uReq, u);
     return ResponseEntity.ok(toUserResp(uRepo.save(u)));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<UserNameResp> update(@PathVariable int id, @RequestBody UserReq uReq) {
     User u = validate(id, uReq);
-    u.setName(uReq.getName());
+    BeanUtils.copyPropertiesIgnoreNull(uReq, u);
     return ResponseEntity.ok(toUserResp(uRepo.save(u)));
   }
 
@@ -121,7 +121,7 @@ public class UserController {
         // check duplicate
         Optional<User> optU = uRepo.findByName(uReq.getName());
         if (optU.isPresent()) {
-          throw new RestApiException(Constants.CODE_DEFAULT, "User has existed !!!");
+          throw new RestApiException(Constants.CODE_DEFAULT, String.format("User[%s] has existed !!!", uReq.getName()));
         }
       }
     }
@@ -130,7 +130,7 @@ public class UserController {
     if (id != null) {
       Optional<User> optU = uRepo.findById(id);
       if (!optU.isPresent()) {
-        throw new RestApiException(Constants.CODE_DEFAULT, "User is not exists !!!");
+        throw new RestApiException(Constants.CODE_DEFAULT, String.format("User with 'id'[%d] is not exists !!!", id));
       }
       return optU.get();
     }

@@ -14,4 +14,6 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
     "     INNER JOIN group_user gu on g.id = gu.group_id " +
     "     WHERE gu.user_id = 1 ", nativeQuery = true)
   List<Group> findAllByUserId(int userId);
+
+  List<Group> findAllByDepartmentId(int departmentId);
 }

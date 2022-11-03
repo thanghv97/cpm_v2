@@ -7,5 +7,5 @@ import java.io.Serializable;
 @Data
 public class DepartmentReq implements Serializable {
   private String name;
-  private int idParent;
+  private Integer idParent;
 }

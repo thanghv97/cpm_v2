@@ -6,6 +6,5 @@ import java.io.Serializable;
 
 @Data
 public class UserReq implements Serializable {
-  private int id;
   private String name;
 }

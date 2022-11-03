@@ -10,15 +10,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tcbs.com.cpm.dto.response.GroupNameResp;
 import tcbs.com.cpm.dto.ResponseDTO;
 import tcbs.com.cpm.dto.request.DepartmentReq;
 import tcbs.com.cpm.dto.response.DepartmentsResp;
+import tcbs.com.cpm.dto.response.GroupNameResp;
 import tcbs.com.cpm.entity.Department;
 import tcbs.com.cpm.entity.Group;
 import tcbs.com.cpm.error.RestApiException;
 import tcbs.com.cpm.repository.DepartmentRepository;
 import tcbs.com.cpm.repository.GroupRepository;
+import tcbs.com.cpm.util.BeanUtils;
 import tcbs.com.cpm.util.Constants;
 
 import java.time.Instant;
@@ -40,23 +41,21 @@ public class DepartmentController {
 
   @PostMapping
   public ResponseEntity<Department> create(@RequestBody DepartmentReq dpReq) {
-    Department dp = validate(null, dpReq);
-    dp.setName(dpReq.getName());
-    dp.setIdParent(dpReq.getIdParent());
+    Department dp = validate(null, dpReq, true);
+    BeanUtils.copyPropertiesIgnoreNull(dpReq, dp);
     return ResponseEntity.ok(dRepo.save(dp));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<Department> update(@PathVariable int id, @RequestBody DepartmentReq dpReq) {
-    Department dp = validate(id, dpReq);
-    dp.setName(dpReq.getName());
-    dp.setIdParent(dpReq.getIdParent());
+    Department dp = validate(id, dpReq, false);
+    BeanUtils.copyPropertiesIgnoreNull(dpReq, dp);
     return ResponseEntity.ok(dRepo.save(dp));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<ResponseDTO> delete(@PathVariable int id) {
-    Department dp = validate(id, null);
+    Department dp = validate(id, null, false);
     dRepo.delete(dp);
     return ResponseEntity.ok(new ResponseDTO(Constants.CODE_DEFAULT, Constants.STATE_SUCCESS, Instant.now()));
   }
@@ -68,8 +67,7 @@ public class DepartmentController {
     List<Group> gs = gRepo.findAll();
     for (Group g : gs) {
       GroupNameResp gn = new GroupNameResp();
-      gn.setId(g.getId());
-      gn.setName(g.getName());
+      BeanUtils.copyPropertiesIgnoreNull(g, gn);
       id2Gs.computeIfAbsent(g.getDepartmentId(), k -> new ArrayList<>()).add(gn);
     }
 
@@ -94,15 +92,18 @@ public class DepartmentController {
     return ResponseEntity.ok(root);
   }
 
-  private Department validate(Integer id, DepartmentReq dpReq) {
+  private Department validate(Integer id, DepartmentReq dpReq, boolean isCreate) {
     if (dpReq != null) {
-      if (dpReq.getIdParent() == 0) {
-        throw new RestApiException(Constants.CODE_DEFAULT, "Missing id parent when create department !!!");
+      if (isCreate && dpReq.getIdParent() == null) {
+        throw new RestApiException(Constants.CODE_DEFAULT, "Missing 'idParent' when create department !!!");
       }
 
-      Optional<Department> optDp = dRepo.findById(dpReq.getIdParent());
-      if (!optDp.isPresent()) {
-        throw new RestApiException(Constants.CODE_DEFAULT, "The Department Parent not found!!!");
+      if (dpReq.getIdParent() != null) {
+        Optional<Department> optDp = dRepo.findById(dpReq.getIdParent());
+        if (!optDp.isPresent()) {
+          throw new RestApiException(Constants.CODE_DEFAULT,
+            String.format("The Department with 'idParent'[%d] not found!!!", dpReq.getIdParent()));
+        }
       }
     }
 
@@ -110,7 +111,7 @@ public class DepartmentController {
     if (id != null) {
       Optional<Department> optDp = dRepo.findById(id);
       if (!optDp.isPresent()) {
-        throw new RestApiException(Constants.CODE_DEFAULT, "The Department not found!!!");
+        throw new RestApiException(Constants.CODE_DEFAULT, String.format("The Department with 'id'[%d] not found!!!", id));
       }
       return optDp.get();
     }
