@@ -67,14 +67,14 @@ public class UserController {
 
   @DeleteMapping("/from-group")
   public ResponseEntity<UserOrgChartResp> deleteUserFromGroup(@RequestParam int id, @RequestParam int groupId) {
-    User u = validate(id, null);
-//    for (Group g: u.getGroups()) {
-//      if (g.getId() == groupId) {
-//        u.removeGroup(g);
-//        break;
-//      }
-//    }
-    uRepo.save(u);
+    validate(id, null);
+    Optional<Group> optG = gRepo.findById(groupId);
+    if (!optG.isPresent()) {
+      throw new RestApiException(Constants.CODE_DEFAULT, "Group not found !!!");
+    }
+    Group g = optG.get();
+    g.getUsers().removeIf(user -> user.getId() == id);
+    gRepo.save(g);
     return getUserOrgChart(id);
   }
 
@@ -98,7 +98,7 @@ public class UserController {
     resp.setId(u.getId());
     resp.setName(u.getName());
 
-    Set<Group> gs = u.getGroups();
+    List<Group> gs = gRepo.findAllByUserId(id);
     if (gs != null) {
       boolean hasLength = false;
       Set<Integer> ids = new HashSet<>();
@@ -156,7 +156,7 @@ public class UserController {
 
     if (hasDepartments) {
       List<DepartmentsResp> drs = new ArrayList<>();
-      for (DepartmentsResp dr: root.getDepartments()) {
+      for (DepartmentsResp dr : root.getDepartments()) {
         DepartmentsResp drNew = recursive(dr, ids);
         if (drNew != null) {
           drs.add(drNew);
