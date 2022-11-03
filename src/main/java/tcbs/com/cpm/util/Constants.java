@@ -10,4 +10,7 @@ public class Constants {
   public static final String CODE_DEFAULT = "100000";
   public static final String STATE_SUCCESS = "SUCCESS";
   public static final String STATE_FAILURE = "FAILURE";
+
+  public static final String SYSTEM_BPM = "BPM";
+  public static final String SYSTEM_WSO2 = "WSO2";
 }

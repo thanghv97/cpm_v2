@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 import tcbs.com.cpm.dto.ResponseDTO;
 import tcbs.com.cpm.dto.request.GroupReq;
 import tcbs.com.cpm.dto.response.GroupResp;
+import tcbs.com.cpm.dto.response.RoleNameResp;
 import tcbs.com.cpm.dto.response.UserNameResp;
 import tcbs.com.cpm.entity.Department;
 import tcbs.com.cpm.entity.Group;
+import tcbs.com.cpm.entity.Role;
 import tcbs.com.cpm.entity.User;
 import tcbs.com.cpm.error.RestApiException;
 import tcbs.com.cpm.repository.DepartmentRepository;
 import tcbs.com.cpm.repository.GroupRepository;
+import tcbs.com.cpm.repository.RoleRepository;
 import tcbs.com.cpm.repository.UserRepository;
 import tcbs.com.cpm.util.BeanUtils;
 import tcbs.com.cpm.util.Constants;
@@ -44,6 +47,9 @@ public class GroupController {
   @Autowired
   private UserRepository uRepo;
 
+  @Autowired
+  private RoleRepository rRepo;
+
   @PostMapping
   public ResponseEntity<Group> create(@RequestBody GroupReq gReq) {
     Group g = validate(null, gReq, true);
@@ -51,6 +57,11 @@ public class GroupController {
     if (gReq.getUserIds() != null) {
       g.setUsers((!gReq.getUserIds().isEmpty())
         ? new HashSet<>(uRepo.findAllByIdIn(new ArrayList<>(gReq.getUserIds())))
+        : new HashSet<>());
+    }
+    if (gReq.getRoleIds() != null) {
+      g.setRoles((!gReq.getRoleIds().isEmpty())
+        ? new HashSet<>(rRepo.findAllByIdIn(new ArrayList<>(gReq.getRoleIds())))
         : new HashSet<>());
     }
     return ResponseEntity.ok(gRepo.save(g));
@@ -63,6 +74,11 @@ public class GroupController {
     if (gReq.getUserIds() != null) {
       g.setUsers((!gReq.getUserIds().isEmpty())
         ? new HashSet<>(uRepo.findAllByIdIn(new ArrayList<>(gReq.getUserIds())))
+        : new HashSet<>());
+    }
+    if (gReq.getRoleIds() != null) {
+      g.setRoles((!gReq.getRoleIds().isEmpty())
+        ? new HashSet<>(rRepo.findAllByIdIn(new ArrayList<>(gReq.getRoleIds())))
         : new HashSet<>());
     }
     return ResponseEntity.ok(gRepo.save(g));
@@ -88,6 +104,13 @@ public class GroupController {
           uns.add(new UserNameResp(u.getId(), u.getName()));
         }
         gr.setUsers(uns);
+      }
+      if (g.getRoles() != null) {
+        Set<RoleNameResp> rns = new HashSet<>();
+        for (Role r : g.getRoles()) {
+          rns.add(new RoleNameResp(r.getId(), r.getName()));
+        }
+        gr.setRoles(rns);
       }
       gns.add(gr);
     }
