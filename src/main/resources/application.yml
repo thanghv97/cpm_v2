@@ -1,0 +1,13 @@
+server:
+  port: 6868
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db-instance-hackathon-7up.c3rewq8fyion.ap-northeast-1.rds.amazonaws.com:3306/CPM
+    username: admin
+    password: tcbs1234
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
