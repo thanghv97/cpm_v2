@@ -11,3 +11,10 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+  url:
+    wso2:
+      base: https://wso2is-sit.tcbs.com.vn/scim2
+      get-user-info: ${spring.url.wso2.base}/Users?filter=userName+Eq+
+      get-group-info: ${spring.url.wso2.base}/Groups?filter=displayName+Eq+
+  keyConfig:
+    authorization: Basic YWRtaW46YWRtaW4=

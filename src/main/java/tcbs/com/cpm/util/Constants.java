@@ -13,4 +13,5 @@ public class Constants {
 
   public static final String SYSTEM_BPM = "BPM";
   public static final String SYSTEM_WSO2 = "WSO2";
+  public static final String AUTHORIZATION_HEADER="Authorization";
 }

@@ -16,5 +16,6 @@ public class WSO2Service implements IPermissionSystem {
   }
 
   public void addRole(String roleName, RoleConfigWSO2Req cfg) {
+
   }
 }
