@@ -15,6 +15,11 @@ public class WSO2Service implements IPermissionSystem {
 
   }
 
+  @Override
+  public void deleteUserFromRole(Set<User> users, Role role) {
+
+  }
+
   public void addRole(String roleName, RoleConfigWSO2Req cfg) {
   }
 }

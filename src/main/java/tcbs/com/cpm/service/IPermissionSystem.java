@@ -7,4 +7,5 @@ import java.util.Set;
 
 public interface IPermissionSystem {
   void addUserToRole(Set<User> users, Role role);
+  void deleteUserFromRole(Set<User> users, Role role);
 }
