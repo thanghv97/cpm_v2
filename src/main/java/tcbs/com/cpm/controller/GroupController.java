@@ -1,5 +1,6 @@
 package tcbs.com.cpm.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,11 +25,15 @@ import tcbs.com.cpm.repository.DepartmentRepository;
 import tcbs.com.cpm.repository.GroupRepository;
 import tcbs.com.cpm.repository.RoleRepository;
 import tcbs.com.cpm.repository.UserRepository;
+import tcbs.com.cpm.service.impl.BPMService;
+import tcbs.com.cpm.service.impl.WSO2Service;
 import tcbs.com.cpm.util.BeanUtils;
 import tcbs.com.cpm.util.Constants;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +41,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("group")
+@Slf4j
 public class GroupController {
 
   @Autowired
@@ -50,6 +56,12 @@ public class GroupController {
   @Autowired
   private RoleRepository rRepo;
 
+  @Autowired
+  private BPMService bpmService;
+
+  @Autowired
+  private WSO2Service wso2Service;
+
   @PostMapping
   public ResponseEntity<Group> create(@RequestBody GroupReq gReq) {
     Group g = validate(null, gReq, true);
@@ -63,25 +75,28 @@ public class GroupController {
       g.setRoles((!gReq.getRoleIds().isEmpty())
         ? new HashSet<>(rRepo.findAllByIdIn(new ArrayList<>(gReq.getRoleIds())))
         : new HashSet<>());
+      addUsersToRole(g.getUsers(), g.getRoles());
     }
     return ResponseEntity.ok(gRepo.save(g));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<Group> update(@PathVariable int id, @RequestBody GroupReq gReq) {
-    Group g = validate(id, gReq, false);
-    BeanUtils.copyPropertiesIgnoreNull(gReq, g);
+    Group gOld = validate(id, gReq, false);
+    Group gNew = new Group();
+    BeanUtils.copyPropertiesIgnoreNull(gOld, gNew);
+    BeanUtils.copyPropertiesIgnoreNull(gReq, gNew);
     if (gReq.getUserIds() != null) {
-      g.setUsers((!gReq.getUserIds().isEmpty())
+      gNew.setUsers((!gReq.getUserIds().isEmpty())
         ? new HashSet<>(uRepo.findAllByIdIn(new ArrayList<>(gReq.getUserIds())))
         : new HashSet<>());
     }
     if (gReq.getRoleIds() != null) {
-      g.setRoles((!gReq.getRoleIds().isEmpty())
+      gNew.setRoles((!gReq.getRoleIds().isEmpty())
         ? new HashSet<>(rRepo.findAllByIdIn(new ArrayList<>(gReq.getRoleIds())))
         : new HashSet<>());
     }
-    return ResponseEntity.ok(gRepo.save(g));
+    return ResponseEntity.ok(gRepo.save(gNew));
   }
 
   @DeleteMapping("/{id}")
@@ -142,5 +157,36 @@ public class GroupController {
       return optG.get();
     }
     return new Group();
+  }
+
+  private void addUsersToRole(Set<User> users, Set<Role> roles) {
+    if (roles.isEmpty()) {
+      return;
+    }
+
+    for (Role r : roles) {
+      List<String> sys = split(r.getSystem());
+      if (sys.isEmpty()) {
+        continue;
+      }
+
+      for (String s : sys) {
+        if (Constants.SYSTEM_BPM.equals(s)) {
+          bpmService.addUserToRole(users, r);
+        } else if (Constants.SYSTEM_WSO2.equals(s)) {
+          wso2Service.addUserToRole(users, r);
+        } else {
+          log.info("Unsupported system {}", r.getSystem());
+        }
+      }
+    }
+  }
+
+  private void removeUsersFromRole(Set<User> users, Set<Role> roles) {
+
+  }
+
+  private List<String> split(String system) {
+    return (system == null) ? Collections.emptyList() : Arrays.asList(system.split(","));
   }
 }

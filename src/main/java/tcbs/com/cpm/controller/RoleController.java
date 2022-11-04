@@ -16,8 +16,8 @@ import tcbs.com.cpm.dto.request.RoleReq;
 import tcbs.com.cpm.entity.Role;
 import tcbs.com.cpm.error.RestApiException;
 import tcbs.com.cpm.repository.RoleRepository;
-import tcbs.com.cpm.service.BPMService;
-import tcbs.com.cpm.service.WSO2Service;
+import tcbs.com.cpm.service.impl.BPMService;
+import tcbs.com.cpm.service.impl.WSO2Service;
 import tcbs.com.cpm.util.BeanUtils;
 import tcbs.com.cpm.util.Constants;
 
