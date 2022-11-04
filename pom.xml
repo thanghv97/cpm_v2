@@ -43,6 +43,13 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
+		<!-- SPRING BOOT: dbms -->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.cloud</groupId>-->
+<!--			<artifactId>spring-cloud-starter-openfeign</artifactId>-->
+<!--			<version>3.1.2</version>-->
+<!--		</dependency>-->
+
 		<!-- Tool: Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

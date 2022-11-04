@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("group")
@@ -64,7 +65,10 @@ public class GroupController {
 
   @PostMapping
   public ResponseEntity<Group> create(@RequestBody GroupReq gReq) {
+    // validate request
     Group g = validate(null, gReq, true);
+
+    // set properties for group
     BeanUtils.copyPropertiesIgnoreNull(gReq, g);
     if (gReq.getUserIds() != null) {
       g.setUsers((!gReq.getUserIds().isEmpty())
@@ -75,6 +79,7 @@ public class GroupController {
       g.setRoles((!gReq.getRoleIds().isEmpty())
         ? new HashSet<>(rRepo.findAllByIdIn(new ArrayList<>(gReq.getRoleIds())))
         : new HashSet<>());
+      // add users to roles
       addUsersToRole(g.getUsers(), g.getRoles());
     }
     return ResponseEntity.ok(gRepo.save(g));
@@ -82,7 +87,10 @@ public class GroupController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Group> update(@PathVariable int id, @RequestBody GroupReq gReq) {
+    // validate request
     Group gOld = validate(id, gReq, false);
+
+    // set properties for group
     Group gNew = new Group();
     BeanUtils.copyPropertiesIgnoreNull(gOld, gNew);
     BeanUtils.copyPropertiesIgnoreNull(gReq, gNew);
@@ -96,6 +104,9 @@ public class GroupController {
         ? new HashSet<>(rRepo.findAllByIdIn(new ArrayList<>(gReq.getRoleIds())))
         : new HashSet<>());
     }
+
+    // update roles for user
+    updateRolesForUser(gOld, gNew);
     return ResponseEntity.ok(gRepo.save(gNew));
   }
 
@@ -159,6 +170,33 @@ public class GroupController {
     return new Group();
   }
 
+  private void updateRolesForUser(Group gOld, Group gNew) {
+    // Add/Remove User From Group
+    Set<Integer> userIdOld = gOld.getUsers().stream().map(User::getId).collect(Collectors.toSet());
+    Set<Integer> userIdNew = gNew.getUsers().stream().map(User::getId).collect(Collectors.toSet());
+    Set<User> userRmv = new HashSet<>(gOld.getUsers());
+    Set<User> userOld = new HashSet<>(gOld.getUsers());
+    Set<User> userNew = new HashSet<>(gNew.getUsers());
+
+    userRmv.removeIf(user -> userIdNew.contains(user.getId()));
+    userNew.removeIf(user -> userIdOld.contains(user.getId()));
+    userOld.removeIf(user -> !userIdNew.contains(user.getId()));
+    addUsersToRole(userNew, gNew.getRoles());
+    removeUsersFromRole(userRmv, gOld.getRoles());
+
+    // Add/Remove Role for old Users
+    Set<Integer> roleIdOld = gOld.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+    Set<Integer> roleIdNew = gNew.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+    Set<Role> roleRmv = new HashSet<>(gOld.getRoles());
+    Set<Role> roleNew = new HashSet<>(gNew.getRoles());
+
+    roleRmv.removeIf(role -> roleIdNew.contains(role.getId()));
+    roleNew.removeIf(role -> roleIdOld.contains(role.getId()));
+
+    addUsersToRole(userOld, roleNew);
+    removeUsersFromRole(userOld, roleRmv);
+  }
+
   private void addUsersToRole(Set<User> users, Set<Role> roles) {
     if (roles.isEmpty()) {
       return;
@@ -183,7 +221,26 @@ public class GroupController {
   }
 
   private void removeUsersFromRole(Set<User> users, Set<Role> roles) {
+    if (roles.isEmpty()) {
+      return;
+    }
 
+    for (Role r : roles) {
+      List<String> sys = split(r.getSystem());
+      if (sys.isEmpty()) {
+        continue;
+      }
+
+      for (String s : sys) {
+        if (Constants.SYSTEM_BPM.equals(s)) {
+          bpmService.deleteUserFromRole(users, r);
+        } else if (Constants.SYSTEM_WSO2.equals(s)) {
+          wso2Service.deleteUserFromRole(users, r);
+        } else {
+          log.info("Unsupported system {}", r.getSystem());
+        }
+      }
+    }
   }
 
   private List<String> split(String system) {
