@@ -2,6 +2,7 @@ package tcbs.com.cpm.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tcbs.com.cpm.client.WSO2Client;
 import tcbs.com.cpm.dto.request.RoleConfigWSO2Req;
@@ -22,6 +23,9 @@ public class WSO2Service implements IPermissionSystem {
   @Autowired
   private WSO2Client wso2Client;
 
+  @Value("${spring.url.wso2is.token}")
+  private String basicAuthorization;
+
   @Override
   public void addUserToRole(Set<User> users, Role role) {
     // TODO: Get user info from WSO2IS
@@ -29,7 +33,7 @@ public class WSO2Service implements IPermissionSystem {
     // TODO: Get group info from WSO2IS
     String groupId = "qwerty";
     // Add patch user to role
-    Object response = wso2Client.addMemberToGroup(groupId, PatchOpAddReq.buildPatchOpAddReq(userMap));
+    Object response = wso2Client.addMemberToGroup(basicAuthorization, groupId, PatchOpAddReq.buildPatchOpAddReq(userMap));
     log.info("[WSO2IS][Add] Response: {}", response);
   }
 
@@ -41,7 +45,7 @@ public class WSO2Service implements IPermissionSystem {
     String groupId = "qwerty";
     // Remove user from role
     for (Map.Entry<String, String> entry : userMap.entrySet()) {
-      Object response = wso2Client.removeMemberFromGroup(groupId,
+      Object response = wso2Client.removeMemberFromGroup(basicAuthorization, groupId,
               PatchOppRemoveReq.buildPatchOppRemoveReq(entry.getKey(), entry.getValue()));
       log.info("[WSO2IS][Remove] Response: {}", response);
     }
