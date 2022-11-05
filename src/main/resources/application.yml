@@ -15,6 +15,6 @@ spring:
     wso2is:
       base: https://wso2is-sit.tcbs.com.vn
       scim2: ${spring.url.wso2is.base}/scim2
-      get-user-info: ${spring.url.wso2is.base}/Users?filter=userName+Eq+
-      get-group-info: ${spring.url.wso2is.base}/Groups?filter=displayName+Eq+
+      get-user-info: ${spring.url.wso2is.base}/scim2/Users?filter=userName+Eq+
+      get-group-info: ${spring.url.wso2is.base}/scim2/Groups?filter=displayName+Eq+
       token: "Basic YWRtaW46YWRtaW4="
