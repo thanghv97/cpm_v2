@@ -48,7 +48,6 @@ public class WSO2Service implements IPermissionSystem {
     }
 
     // Get group info from WSO2IS
-//    String groupName = "HACKATHON_CHAMPION_VIEWER";
     String groupId = wso2Client.getGroupInfoWso2(role.getName());
 
     // Add patch user to role
@@ -71,8 +70,7 @@ public class WSO2Service implements IPermissionSystem {
     }
 
     // Get group info from WSO2IS
-    String groupName = "HACKATHON_CHAMPION_VIEWER";
-    String groupId = wso2Client.getGroupInfoWso2(groupName);
+    String groupId = wso2Client.getGroupInfoWso2(role.getName());
 
     // Remove user from role
     for (Map.Entry<String, String> entry : userMap.entrySet()) {

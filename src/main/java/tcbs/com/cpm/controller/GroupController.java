@@ -29,6 +29,7 @@ import tcbs.com.cpm.service.impl.BPMService;
 import tcbs.com.cpm.service.impl.WSO2Service;
 import tcbs.com.cpm.util.BeanUtils;
 import tcbs.com.cpm.util.Constants;
+import tcbs.com.cpm.util.DateTimeUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -138,6 +139,7 @@ public class GroupController {
         }
         gr.setRoles(rns);
       }
+      gr.setUpdatedAt(DateTimeUtils.instantDateToString(Instant.now(), DateTimeUtils.YYYY_MM_DD));
       gns.add(gr);
     }
     return ResponseEntity.ok(gns);
@@ -198,7 +200,7 @@ public class GroupController {
   }
 
   private void addUsersToRole(Set<User> users, Set<Role> roles) {
-    if (roles.isEmpty()) {
+    if (roles.isEmpty() || users.isEmpty()) {
       return;
     }
 
@@ -221,7 +223,7 @@ public class GroupController {
   }
 
   private void removeUsersFromRole(Set<User> users, Set<Role> roles) {
-    if (roles.isEmpty()) {
+    if (roles.isEmpty() || users.isEmpty()) {
       return;
     }
 

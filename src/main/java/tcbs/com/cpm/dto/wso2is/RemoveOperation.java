@@ -13,7 +13,7 @@ public class RemoveOperation implements Serializable {
     private String path;
 
     public static RemoveOperation buildRemoveOp(String username, String userId) {
-        String path = String.format("members[display eq \"%s\", value eq \"%s\"]", username, userId);
+        String path = String.format("members[display eq \\\"%s\\\", value eq \\\"%s\\\"]", username, userId);
         return RemoveOperation.builder()
                 .op(Constants.WSO2_OP_REMOVE)
                 .path(path)

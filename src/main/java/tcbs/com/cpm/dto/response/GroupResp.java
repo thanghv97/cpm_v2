@@ -3,7 +3,6 @@ package tcbs.com.cpm.dto.response;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -12,5 +11,5 @@ public class GroupResp implements Serializable {
   private String name;
   private Set<RoleNameResp> roles;
   private Set<UserNameResp> users;
-  private Instant updatedAt;
+  private String updatedAt;
 }

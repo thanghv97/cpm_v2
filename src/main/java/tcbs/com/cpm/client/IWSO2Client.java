@@ -15,7 +15,7 @@ public interface IWSO2Client {
                                             @PathVariable String id,
                                             @RequestBody Object body);
 
-    @PostMapping(value = "/Groups/{id}", consumes = "application/json")
+    @PatchMapping(value = "/Groups/{id}", consumes = "application/json")
     ResponseEntity<Object> removeMemberFromGroup(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuthorization,
                                                  @PathVariable String id,
                                                  @RequestBody Object body);
