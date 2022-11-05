@@ -13,6 +13,7 @@ public class Constants {
 
   public static final String SYSTEM_BPM = "BPM";
   public static final String SYSTEM_WSO2 = "WSO2";
+  public static final String AUTHORIZATION_HEADER="Authorization";
 
   public static final String WSO2_SCHEMAS_PATCHOP = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
   public static final String WSO2_OP_ADD = "add";

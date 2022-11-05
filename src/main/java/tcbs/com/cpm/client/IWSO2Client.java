@@ -9,7 +9,7 @@ import tcbs.com.cpm.dto.wso2is.PatchOpAddReq;
 import tcbs.com.cpm.dto.wso2is.PatchOppRemoveReq;
 
 @FeignClient(name = "wso2is-service", url = "${spring.url.wso2is.scim2}", configuration = FeignClientConfig.class)
-public interface WSO2Client {
+public interface IWSO2Client {
     @PatchMapping(value = "/Groups/{id}", consumes = "application/json")
     ResponseEntity<Object> addMemberToGroup(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuthorization,
                                             @PathVariable String id,

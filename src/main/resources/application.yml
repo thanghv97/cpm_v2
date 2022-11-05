@@ -13,6 +13,8 @@ spring:
     show-sql: true
   url:
     wso2is:
-      base-url: "https://wso2is-sit.tcbs.com.vn"
+      base: https://wso2is-sit.tcbs.com.vn
+      scim2: ${spring.url.wso2is}/scim2
+      get-user-info: ${spring.url.wso2is.base}/Users?filter=userName+Eq+
+      get-group-info: ${spring.url.wso2is.base}/Groups?filter=displayName+Eq+
       token: "Basic YWRtaW46YWRtaW4="
-      scim2: "${spring.url.wso2is}/scim2"
