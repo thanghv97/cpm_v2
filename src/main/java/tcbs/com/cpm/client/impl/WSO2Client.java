@@ -1,4 +1,4 @@
-package tcbs.com.cpm.service.impl;
+package tcbs.com.cpm.client.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -10,13 +10,13 @@ import tcbs.com.cpm.util.Constants;
 
 @Component
 public class WSO2Client {
-  @Value("${spring.url.wso2.get-user-info}")
+  @Value("${spring.url.wso2is.get-user-info}")
   private String userInfoUrl;
 
-  @Value("${spring.url.wso2.get-group-info}")
+  @Value("${spring.url.wso2is.get-group-info}")
   private String groupInfoUrl;
 
-  @Value("${spring.keyConfig.authorization}")
+  @Value("${spring.url.wso2is.token}")
   private String authorizationKey;
 
 

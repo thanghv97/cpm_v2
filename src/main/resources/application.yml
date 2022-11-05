@@ -12,9 +12,9 @@ spring:
       ddl-auto: validate
     show-sql: true
   url:
-    wso2:
-      base: https://wso2is-sit.tcbs.com.vn/scim2
-      get-user-info: ${spring.url.wso2.base}/Users?filter=userName+Eq+
-      get-group-info: ${spring.url.wso2.base}/Groups?filter=displayName+Eq+
-  keyConfig:
-    authorization: Basic YWRtaW46YWRtaW4=
+    wso2is:
+      base: https://wso2is-sit.tcbs.com.vn
+      scim2: ${spring.url.wso2is}/scim2
+      get-user-info: ${spring.url.wso2is.base}/Users?filter=userName+Eq+
+      get-group-info: ${spring.url.wso2is.base}/Groups?filter=displayName+Eq+
+      token: "Basic YWRtaW46YWRtaW4="
