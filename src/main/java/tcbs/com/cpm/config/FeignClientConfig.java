@@ -19,30 +19,30 @@ import tcbs.com.cpm.error.CustomErrorDecoder;
 @Configuration
 @EnableFeignClients(basePackages = {"tcbs.com.cpm.client"})
 public class FeignClientConfig {
-
-    @Autowired
-    private ObjectFactory<HttpMessageConverters> messageConverters;
-
-    @Bean
-    public OkHttpClient client() {
-        return new OkHttpClient();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(value = ErrorDecoder.class)
-    public CustomErrorDecoder errorDecoder() {
-        return new CustomErrorDecoder();
-    }
-
-    @Bean
-    public Encoder feignFormEncoder() {
-        return new FormEncoder(new SpringEncoder(this.messageConverters));
-    }
-
-    @Bean
-    public Retryer retryer() {
-        return new CustomRetryer();
-    }
+//
+//    @Autowired
+//    private ObjectFactory<HttpMessageConverters> messageConverters;
+//
+//    @Bean
+//    public OkHttpClient client() {
+//        return new OkHttpClient();
+//    }
+//
+//    @Bean
+//    @ConditionalOnMissingBean(value = ErrorDecoder.class)
+//    public CustomErrorDecoder errorDecoder() {
+//        return new CustomErrorDecoder();
+//    }
+//
+//    @Bean
+//    public Encoder feignFormEncoder() {
+//        return new FormEncoder(new SpringEncoder(this.messageConverters));
+//    }
+//
+//    @Bean
+//    public Retryer retryer() {
+//        return new CustomRetryer();
+//    }
 }
 
 class CustomRetryer implements Retryer {

@@ -1,5 +1,6 @@
 package tcbs.com.cpm.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import tcbs.com.cpm.dto.wso2is.PatchOppRemoveReq;
 import tcbs.com.cpm.entity.Role;
 import tcbs.com.cpm.entity.User;
 import tcbs.com.cpm.service.IPermissionSystem;
+import tcbs.com.cpm.util.JsonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,17 +43,18 @@ public class WSO2Service implements IPermissionSystem {
     // Get user info from WSO2IS
     // add userInfo to userMap
     for(User user: users){
-      WSO2UserInfo userInfo = wso2Client.getUserInfoWso2(user.getName());
-      userMap.put(user.getName(), userInfo.getResources().get(0).getId());
+      String userId = wso2Client.getUserInfoWso2(user.getName());
+      userMap.put(user.getName(), userId);
     }
 
     // Get group info from WSO2IS
-    String groupName = "HACKATHON_CHAMPION_VIEWER";
-    WSO2GroupInfo groupInfo = wso2Client.getGroupInfoWso2(groupName);
-    String groupId = groupInfo.getResources().get(0).getId();
+//    String groupName = "HACKATHON_CHAMPION_VIEWER";
+    String groupId = wso2Client.getGroupInfoWso2(role.getName());
 
     // Add patch user to role
-    Object response = iWso2Client.addMemberToGroup(basicAuthorization, groupId, PatchOpAddReq.buildPatchOpAddReq(userMap));
+    PatchOpAddReq patchOpAddReq = PatchOpAddReq.buildPatchOpAddReq(userMap);
+    Map<String, Object> body = new ObjectMapper().convertValue(patchOpAddReq, Map.class);
+    Object response = iWso2Client.addMemberToGroup(basicAuthorization, groupId, body);
     log.info("[WSO2IS][Add] Response: {}", response);
   }
 
@@ -63,19 +66,19 @@ public class WSO2Service implements IPermissionSystem {
     // Get user info from WSO2IS
     // add userInfo to userMap
     for(User user: users){
-      WSO2UserInfo userInfo = wso2Client.getUserInfoWso2(user.getName());
-      userMap.put(user.getName(), userInfo.getResources().get(0).getId());
+      String userId = wso2Client.getUserInfoWso2(user.getName());
+      userMap.put(user.getName(), userId);
     }
 
     // Get group info from WSO2IS
     String groupName = "HACKATHON_CHAMPION_VIEWER";
-    WSO2GroupInfo groupInfo = wso2Client.getGroupInfoWso2(groupName);
-    String groupId = groupInfo.getResources().get(0).getId();
+    String groupId = wso2Client.getGroupInfoWso2(groupName);
 
     // Remove user from role
     for (Map.Entry<String, String> entry : userMap.entrySet()) {
-      Object response = iWso2Client.removeMemberFromGroup(basicAuthorization, groupId,
-              PatchOppRemoveReq.buildPatchOppRemoveReq(entry.getKey(), entry.getValue()));
+      PatchOppRemoveReq patchOppRemoveReq = PatchOppRemoveReq.buildPatchOppRemoveReq(entry.getKey(), entry.getValue());
+      Map<String, Object> body = new ObjectMapper().convertValue(patchOppRemoveReq, Map.class);
+      Object response = iWso2Client.removeMemberFromGroup(basicAuthorization, groupId, body);
       log.info("[WSO2IS][Remove] Response: {}", response);
     }
   }

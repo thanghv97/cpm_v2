@@ -1,5 +1,6 @@
 package tcbs.com.cpm.dto.wso2is;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import tcbs.com.cpm.util.Constants;
@@ -14,6 +15,7 @@ import java.util.Map;
 @Builder
 public class PatchOpAddReq implements Serializable {
     private List<String> schemas;
+    @JsonProperty(value = "Operations")
     private List<AddOperation> Operations;
 
     public static PatchOpAddReq buildPatchOpAddReq(Map<String, String> userMap) {

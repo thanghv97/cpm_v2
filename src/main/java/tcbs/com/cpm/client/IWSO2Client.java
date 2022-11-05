@@ -13,10 +13,10 @@ public interface IWSO2Client {
     @PatchMapping(value = "/Groups/{id}", consumes = "application/json")
     ResponseEntity<Object> addMemberToGroup(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuthorization,
                                             @PathVariable String id,
-                                            @RequestBody PatchOpAddReq body);
+                                            @RequestBody Object body);
 
     @PostMapping(value = "/Groups/{id}", consumes = "application/json")
     ResponseEntity<Object> removeMemberFromGroup(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuthorization,
                                                  @PathVariable String id,
-                                                 @RequestBody PatchOppRemoveReq body);
+                                                 @RequestBody Object body);
 }
