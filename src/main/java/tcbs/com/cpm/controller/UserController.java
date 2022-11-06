@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import tcbs.com.cpm.dto.ResponseDTO;
 import tcbs.com.cpm.dto.request.UserReq;
 import tcbs.com.cpm.dto.response.DepartmentsResp;
+import tcbs.com.cpm.dto.response.RoleResp;
+import tcbs.com.cpm.dto.response.UserDetailResp;
 import tcbs.com.cpm.dto.response.UserNameResp;
 import tcbs.com.cpm.dto.response.UserOrgChartResp;
 import tcbs.com.cpm.entity.Group;
+import tcbs.com.cpm.entity.Role;
 import tcbs.com.cpm.entity.User;
 import tcbs.com.cpm.error.RestApiException;
 import tcbs.com.cpm.repository.GroupRepository;
@@ -26,8 +29,11 @@ import tcbs.com.cpm.util.Constants;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,6 +91,41 @@ public class UserController {
     for (User u : us) {
       resp.add(new UserNameResp(u.getId(), u.getName()));
     }
+    return ResponseEntity.ok(resp);
+  }
+
+  @GetMapping("/detail/{id}")
+  public ResponseEntity<UserDetailResp> getDetail(@PathVariable int id) {
+    User u = validate(id, null);
+    UserDetailResp resp = new UserDetailResp();
+    resp.setId(u.getId());
+    resp.setName(u.getName());
+
+    List<Group> gs = gRepo.findAllByUserId(id);
+    Map<Integer, RoleResp> roles = new HashMap();
+    Set<Integer> roleIds = new HashSet<>();
+    if (gs != null) {
+      for (Group g : gs) {
+        if (!g.getRoles().isEmpty()) {
+          for (Role r : g.getRoles()) {
+            RoleResp rr = new RoleResp();
+            BeanUtils.copyPropertiesIgnoreNull(r, rr);
+            if (!roleIds.contains(rr.getId())) {
+              rr.setGroups(Collections.singletonList(g.getName()));
+              roleIds.add(rr.getId());
+              roles.put(rr.getId(), rr);
+            } else {
+              RoleResp rr_ = roles.get(rr.getId());
+              List<String> groups = new ArrayList<>(rr_.getGroups());
+              groups.add(g.getName());
+              rr_.setGroups(groups);
+              roles.put(rr.getId(), rr_);
+            }
+          }
+        }
+      }
+    }
+    resp.setRoles(new HashSet<>(roles.values()));
     return ResponseEntity.ok(resp);
   }
 

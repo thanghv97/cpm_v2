@@ -19,7 +19,7 @@ spring:
       get-group-info: ${spring.url.wso2is.base}/scim2/Groups?filter=displayName+Eq+
       token: "Basic YWRtaW46YWRtaW4="
     bpm:
-      base: https://tcsmart-uat.tcbs.com.vn/rest/bpm/wle/v1/
+      base: https://10.83.3.120:9444/rest/bpm/wle/v1/
       token: "Basic dGhhbmdodjM6VG9tMTcxMTk3Lg=="
 
 feign:
